@@ -13,3 +13,44 @@ body,p,h1,h2,h3,h4,h5,h6,ul,ol,dl,li,dt,dd{
     /* 默认鼠标 */
     cursor: default;
 }
+a:link {color: #999;}
+a:visited {color: #999;}
+/* 清除浮动 */
+
+.clearfix:before,.clearfix:after {
+
+    content:"";
+    
+    display:table;
+    
+    }
+    
+    .clearfix:after {
+    
+    clear:both;
+    
+    overflow:hidden;
+    
+    }
+    
+    .clearfix {
+    
+    zoom:1; /* for ie6 & ie7 */
+    
+    }
+    
+    .clear {
+    
+    clear:both;
+    
+    display:block;
+    
+    font-size:0;
+    
+    height:0;
+    
+    line-height:0;
+    
+    overflow:hidden;
+    
+    }

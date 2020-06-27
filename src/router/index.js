@@ -3,6 +3,11 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
+const originalPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location) {
+  return originalPush.call(this, location).catch(err => err);
+}
+
 const Home = () => import('@/views/home/Home')
 const Category = () => import('@/views/category/Category')
 const Shopcart = () => import('@/views/shopcart/Shopcart')
@@ -26,7 +31,7 @@ const routes = [
     component: Shopcart
   },
   {
-    path: 'profile',
+    path: '/profile',
     component: Profile
   }
 ]
