@@ -2,7 +2,10 @@
 <div id="home">
   <van-Nav-bar title = "购物街" class = "home-nav-bar" fixed/>
 
-  <scroll class="content">
+  <scroll class="content" ref="scroll" 
+  :probe-type="3" 
+  @scroll="contentScroll" 
+  @pullingUp="loadMore">
     <van-swipe :autoplay="3000">
       <van-swipe-item v-for="(image, index) in banners" :key="index">
        <img v-lazy="image.image" class="img-swipe"/>
@@ -13,15 +16,14 @@
     <tab-control class="tab-control" :titles="['流行', '新款', '精选']" @tabClick="tabClick"></tab-control>
     <goods-list :goods="goods[currentType].list"></goods-list>
   </scroll>
-  <!-- <p>{{timeMsg}}</p> -->
-  <div class="a"></div>
-  
+  <back-top @click.native="backclick" v-show="showTop"></back-top> 
+  <!-- <p>{{timeMsg}}</p> --> 
 </div>
 
 
-</template>
+</template> 
 
-<script>
+<script scoped>
 import {getHomeMultidata, getHomeGoods} from "@/network/home.js"
 import HomeRecommendView from '@/views/home/childComps/HomeRecommendView'
 import FeatureView from '@/views/home/childComps/FeatureView'
@@ -29,6 +31,7 @@ import FeatureView from '@/views/home/childComps/FeatureView'
 import TabControl from '@/components/content/tabControl/TabControl'
 import GoodsList from '@/components/content/Goods/GoodsList'
 import Scroll from '@/components/common/scroll/Scroll'
+import BackTop from '@/components/content/backTop/BackTop'
 
 export default {
   name: 'Home',
@@ -37,7 +40,8 @@ export default {
     FeatureView,
     TabControl,
     GoodsList,
-    Scroll
+    Scroll,
+    BackTop 
   },
   data() {
     return {
@@ -49,7 +53,8 @@ export default {
         new: {page: 0, list: []},
         sell: {page: 0, list: []}
       },
-      currentType: 'pop'
+      currentType: 'pop',
+      showTop: false
     }
   },
   created() {
@@ -76,7 +81,25 @@ export default {
         case 2: 
         this.currentType = 'sell'
       }
+
     },
+      
+    backclick() {
+      this.$refs.scroll.scroll.scrollTo(0, 0, 500)
+    },   
+    // 滚动坐标
+    contentScroll(position) {
+      // console.log(position);
+      this.showTop = (-position.y) >1000
+      
+    },
+    loadMore() {
+
+      this.homeGoodsdata(this.currentType)
+      this.$refs.scroll.scroll.refresh()
+      
+    }
+    ,
     /**
      * 网络请求相关方法
      */
@@ -92,6 +115,7 @@ export default {
       this.goods[type].list.push(...res.data.list);
       this.goods[type].page += 1
 
+      this.$refs.scroll.finishPullUp()
       })
     }
   },
@@ -141,11 +165,6 @@ export default {
     height: 187.188px;
   }
 
-
-  .a {
-    height: 300px;
-  }
-
   .tab-control {
     /* position: sticky; */
     top: 46px;
@@ -157,8 +176,11 @@ export default {
     bottom: 49px;
     left: 0;
     right: 0;
-    /* height: calc(100% - 95px); */
     overflow: hidden;
-    /* margin-top: 473px; */
   }
+  /* .content {
+    height: calc(100% - 95px);
+    overflow: hidden;
+    margin-top: 46px;
+  } */
 </style>
